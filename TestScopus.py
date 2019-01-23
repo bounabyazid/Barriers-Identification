@@ -5,13 +5,19 @@ Created on Tue Jan  8 10:27:47 2019
 
 @author: Yazid Bounab
 """
-import requests
+import csv
 import json
+
+import requests
+import pandas as pd
+
 from Elsevier import ELSEVIER_API_KEY
 import xml.etree.ElementTree as ET
 
 #https://api.elsevier.com/content/search/scopus?query='russian+finnish+barriers'&apiKey=
 #http://kitchingroup.cheme.cmu.edu/blog/2015/04/03/Getting-data-from-the-Scopus-API/
+
+url = "https://api.elsevier.com/content/search/scopus?query='russian+finnish+barriers+business'"
 
 def get_Results():
     url = "http://ieeexploreapi.ieee.org/api/v1/search/articles&index_terms=finnish"
@@ -21,26 +27,25 @@ def get_Results():
 def get_Dois(resp):
     Dois = []
     y = json.loads(resp.text)
-    for entry in y['search-results']['entry']:
-        #print (entry['dc:title'])
-        if 'prism:doi' in entry.keys():
-            #print(entry['prism:doi'])
-            Dois.append(entry['prism:doi'])
+    if 'search-results' in y.keys():
+       for entry in y['search-results']['entry']:
+           #print (entry['dc:title'])
+           if 'prism:doi' in entry.keys():
+               #print(entry['prism:doi'])
+               Dois.append(entry['prism:doi'])
+    #return [[str(r['prism:doi'])] for r in results['search-results']["entry"]]
     return Dois
-
-def get_Dois2(resp): 
-    results = resp.json()
-    return [[str(r['prism:doi'])] for r in results['search-results']["entry"]]
 
 def get_IDs(resp): 
     results = resp.json()
     return [[str(r['dc:identifier'])] for r in results['search-results']["entry"]]
 
 def get_Text_DOI(doi):
-    print (doi)
+    print ("https://api.elsevier.com/content/article/doi/"+doi)
     #resp = requests.get("https://api.elsevier.com/content/article/doi/10.1016/j.ibusrev.2018.07.001?APIKey=",
     resp = requests.get("https://api.elsevier.com/content/article/doi/"+doi,
                 headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
+    print (resp.text)
 
     y = json.loads(resp.text)
     title=''
@@ -48,17 +53,33 @@ def get_Text_DOI(doi):
     if 'full-text-retrieval-response' in y.keys():
         title  = y['full-text-retrieval-response']['coredata']['dc:title']
         abstract = y['full-text-retrieval-response']['coredata']['dc:description']
-        #print (title,abstract)
+        print (title,abstract)
     return title,abstract
 
 def get_Text_scopus_ID(SCOPUS_ID):
     url = "http://api.elsevier.com/content/abstract/scopus_id/"+ SCOPUS_ID
-    resp = requests.get(url, headers={'Accept':'application/json','X-ELS-APIKey': MY_API_KEY})
+    resp = requests.get(url, headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
     results = json.loads(resp.text.encode('utf-8'))
-    
-def json_parse():
-    #resp = requests.get("https://api.elsevier.com/content/search/scopus?query=%27russian+finnish+barriers%27",
-    url = "https://api.elsevier.com/content/search/scopus?query='russian+finnish+trade+barriers'"
+
+def get_Titles_Abstracts(Dois):
+    Absts = []
+    Titles = []
+    for doi in Dois:
+        print (doi)
+        title,abstract = get_Text_DOI(doi)
+        Titles.append(title)
+        Absts.append(abstract)
+    return Titles,Absts
+
+def getdocIDs(): 
+    url = 'https://api.elsevier.com/content/search/scopus?query=%27russian+finnish+trade+barriers%27&field=dc:identifier&apiKey='
+    url = "https://api.elsevier.com/content/search/scopus?query='trade+barriers+business'&field=dc:identifier"
+    resp = requests.get(url, headers={'Accept':'application/json', 'X-ELS-APIKey': ELSEVIER_API_KEY})
+
+    results = resp.json()
+    return [[str(r['dc:identifier'])] for r in results['search-results']["entry"]]
+   
+def Search_Quary():
     resp = requests.get(url, headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
     
     y = json.loads(resp.text)
@@ -72,41 +93,47 @@ def json_parse():
 
     if totalResults > itemsPerPage:
        N = int(totalResults/itemsPerPage)
-       
+       i = 0
        while startC < itemsPerPage*N:
+             print ('page '+str(i)+'/'+str(N))
              resp = requests.get(url+'&start='+str(startC), headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
-             Dois.extend(get_Dois2(resp))
+             Dois.extend(get_Dois(resp))
              startC += itemsPerPage
-
+             i+=1
+       print ('page '+str(i)+'/'+str(N))
+       
        resp = requests.get(url+'&start='+str(startC), headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
        Dois.extend(get_Dois(resp))
     else:
          resp = requests.get(url+'&start='+str(startC), headers={'Accept':'application/json','X-ELS-APIKey': ELSEVIER_API_KEY})
          Dois = get_Dois(resp)
     
-    return Dois#,Titles,Absts
+    #with open('Dois.txt', 'w') as f:
+    #     f.write("\n".join(Dois))
+    
+    Titles,Absts = get_Titles_Abstracts(Dois)
+    
+    return Dois,Titles,Absts
 
-#Dois,Titles,Absts = json_parse()
+def Load_Dois():
+    with open("Dois.txt") as f:
+         Dois = f.readlines()
 
-Dois = json_parse()
+    df = pd.DataFrame({'Doi': Dois,'Scopus_Id':'','Title':'','Abstract' : '','Keywords':''})
+    i=0
+    for doi in Dois:
+        df.at[i,'Title'],df.at[i,'Abstract'] = get_Text_DOI(doi)
 
-#title,abstract = getText('10.1016/j.ibusrev.2018.07.001')
-#title,abstract = getText('10.1111/j.1533-8525.1995.tb00443.x')
+        i+=1
+    
+              
+    #df.to_csv('Corpus.csv')
+    return df
 
-#Absts = []
-#Titles = []
-#for doi in Dois:
-#    title,abstract = get_Text_DOI(doi)
-#    Absts.append(abstract)
-#    Titles.append(title)
+#Dois = Search_Quary()
+#Titles,Absts = get_Titles_Abstracts(Dois)
+#SC_IDS = getdocIDs()
 
-def getdocIDs(): 
-    url = 'https://api.elsevier.com/content/search/scopus?query=%27russian+finnish+trade+barriers%27&field=dc:identifier&apiKey='
-    url = "https://api.elsevier.com/content/search/scopus?query='russian+finnish+trade+barriers'&field=dc:identifier"
-    resp = requests.get(url, headers={'Accept':'application/json', 'X-ELS-APIKey': ELSEVIER_API_KEY})
+#df = Load_Dois()
 
-    results = resp.json()
-    return [[str(r['dc:identifier'])] for r in results['search-results']["entry"]]
-
-SC_IDS = getdocIDs()
-
+Dois,Titles,Absts = Search_Quary()
