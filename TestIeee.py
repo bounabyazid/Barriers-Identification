@@ -15,7 +15,7 @@ import pandas as pd
 
 import xml.etree.ElementTree as ET
 
-key = 'cu63czs28tuf38d74cypnv4u'
+key = 'key'
     
 def get_Results():
     outputType = 'json'
