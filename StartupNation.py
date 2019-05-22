@@ -2,8 +2,7 @@ import json
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, Comment
 
-link = "https://www.thefastlaneforum.com/community/search/36101691/?q=trade+barrier&o=date"
-'https://community.startupnation.com/search?Search=russia+trade+barrier'
+link = 'https://community.startupnation.com/search?Search=trade+barrier'
 
 def getPages(link):
     over=urlopen(link).read()
@@ -23,26 +22,24 @@ def getComments(Links):
         over=urlopen(link).read()
         soup = BeautifulSoup(over, features="lxml")
         Results = soup.findAll('li',attrs={"class":"searchResult post primaryContent"})
-        #Comments = []
+        Comments = []
         
         for res in Results:
-            print (res.find('h3',attrs={"class":"title"}).find('a')["href"])
-            break
-            #Dict = {}
-            #Dict['usernam'] = res.find('a',attrs={"class":"username"}).text
-            #Dict['title'] = res.find('h3',attrs={"class":"title"}).text
-            #Dict['Comment'] = res.find('blockquote',attrs={"class":"snippet"}).text
-            #Dict['DateTime'] = res.find('span',attrs={"class":"DateTime"})['title']
-            #Comments.append(Dict)
+            Dict = {}
+            Dict['usernam'] = res.find('a',attrs={"class":"username"}).text
+            Dict['title'] = res.find('h3',attrs={"class":"title"}).text
+            Dict['Comment'] = res.find('blockquote',attrs={"class":"snippet"}).text
+            Dict['DateTime'] = res.find('span',attrs={"class":"DateTime"})['title']
+            Comments.append(Dict)
             
-        #Pages['Page'+str(Links.index(link))] = Comments
+        Pages['Page'+str(Links.index(link))] = Comments
     return Pages
 
-getComments([link])
+Links = getPages(link)
 #Pages = getComments(getPages(link))
 
-#with open('Fastlane.json', 'w') as fp:
-#     json.dump(Pages, fp)
+with open('Fastlane.json', 'w') as fp:
+     json.dump(Pages, fp)
 
 #with open('Fastlane.json', 'r') as fp:
 #     Pages = json.load(fp)
