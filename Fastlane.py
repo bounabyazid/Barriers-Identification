@@ -63,12 +63,17 @@ def getMessages(link):
 #    for link in Links:
     over=urlopen(link).read()
     soup = BeautifulSoup(over, features="lxml")
-    Results = soup.findAll('li')
+    Results = soup.findAll('ol',attrs={"class":"messageList xbMessageModern"})
+
     
     Comments = []
 
     for res in Results:
-    
+        print(res.find('article').text)
+        #print(res.find('blockquote',attrs={"class":"messageText SelectQuoteContainer ugc baseHtml"}))
+
+        break
+        
 def getTopics(Links): 
     Pages = {}
     for link in Links:
