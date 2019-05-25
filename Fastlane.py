@@ -74,7 +74,7 @@ def getTopics(Links):
             Dict = {}
             Dict['usernam'] = res.find('a',attrs={"class":"username"}).text
              
-            title = str(res.find('h3',attrs={"class":"title"}).find('a'))
+            title = str(res.find('h3',attrs={"class":"title"}).find('a').text)
             
             if title.find('</span>'):
                start = title.find('</span>')+len('</span>')
@@ -105,5 +105,3 @@ Pages = getTopics(getPages(link))
 #with open('Fastlane.json', 'w') as fp:
 #     json.dump(Pages, fp)
 
-#with open('Fastlane.json', 'r') as fp:
-#     Pages = json.load(fp)
