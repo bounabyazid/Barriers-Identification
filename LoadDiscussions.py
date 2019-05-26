@@ -7,6 +7,7 @@ Created on Sat May 25 10:06:53 2019
 """
 import os
 import json
+import numpy as np
 from scipy import mean
 from fuzzywuzzy import fuzz
 from nltk.tokenize import sent_tokenize
@@ -111,16 +112,23 @@ def keywords_Frequencies(JasonFile):
         Dictionary[keyword] = Frequencies    
     return Dictionary
 
+def Sum_Dictionary(Dict,N):
+    a = np.array(list(Dict.values()))
+    Sum = np.sum(a, axis=0).tolist()[N]
+    return Sum
 
-def Trade_Barriers_Proportion(Dictionary):
+def Trade_Barriers_Proportion(N):
+    Dictionary = keywords_Frequencies('keywordsDict.json')
     Barriers = Barriers_Keywords()
+    
+    Sum = Sum_Dictionary(Dictionary,N)
+    
     for Type in Barriers.keys():
         for Barrier in Barriers[Type].keys():
             for keyword in Barriers[Type][Barrier].keys():
-                Barriers[Type][Barrier][keyword] = Dictionary[keyword][0]
-    
+                Barriers[Type][Barrier][keyword] = Dictionary[keyword][N] /Sum  
     return Barriers
  
 #keywordsDict = keywords_Discussion_Matching()
-Dictionary = keywords_Frequencies('keywordsDict.json')
-Barriers = Trade_Barriers_Proportion(Dictionary)
+
+Barriers = Trade_Barriers_Proportion(0)
