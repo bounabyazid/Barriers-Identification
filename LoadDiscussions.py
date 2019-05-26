@@ -7,8 +7,10 @@ Created on Sat May 25 10:06:53 2019
 """
 import os
 import json
+from scipy import mean
 from fuzzywuzzy import fuzz
 from nltk.tokenize import sent_tokenize
+
 
 def List_Dirs(MainDir):
     return [ f for f in os.listdir(MainDir)]# if os.path.isfile(os.path.join(destdir,f)) ]
@@ -26,19 +28,32 @@ def List_Dirs_and_Files(MainDir, extension, path):
         Files.extend(List_Files(MainDir+'/'+Sub, extension, path))
     return SubDirs, Files
 
+def Barriers_Keywords():
+    MainDir = '/home/polo/.config/spyder-py3/Barriers Identification/Barriers DashBoard/Barriers'
+
+    Barriers = dict((Sub,{}) for Sub in List_Dirs(MainDir))
+
+    for Sub in Barriers.keys():
+        Files = List_Files(MainDir+'/'+Sub, 'txt', path=False)
+        Barriers[Sub] = dict((F.replace('.txt',''),{}) for F in Files)
+        
+        for F in Barriers[Sub].keys():
+            with open(MainDir+'/'+Sub+'/'+F+'.txt', 'r') as f:
+                 keywords = f.read().strip().split('\n')
+                 Barriers[Sub][F] = dict((keyword,0) for keyword in keywords)
+    return Barriers
+                
 def List_keywords():
     MainDir = '/home/polo/.config/spyder-py3/Barriers Identification/Barriers DashBoard/Barriers'
 
     SubDirs, Files = List_Dirs_and_Files(MainDir, 'txt', path=True)
-    
     keywords = list()
     
     for File in Files:
         with open(File, 'r') as f:
              keywords.extend(f.read().strip().split('\n'))
-    
     return list(set(keywords))
-
+   
 def Load_Discussions(JasonFile):
     with open(JasonFile, 'r') as fp:
          Pages = json.load(fp)
@@ -53,23 +68,7 @@ def Load_Discussions(JasonFile):
                        MsgList.append(sentence)
     return MsgList 
     
-def Trade_Barriers_Proportion():
-    Tariff = {
-		"Direction" : 0,
-		"Purpose" : 0,
-		"Time length" : 0,
-		"Import restraints" : 0,
-		"Rates" : 0,
-		"Distribution points" : 0
-	}
-    NonTariff = {
-		"Government participation in trade" : 0,
-		"Customs and entry procedures" : 0,
-		"Product requirements" : 0,
-		"Quotas" : 0,
-		"Financial control" : 0
-	}
-    
+def keywords_Discussion_Matching():
     keywords = List_keywords()
     MsgList = Load_Discussions('Fastlane.json')
     
@@ -94,5 +93,34 @@ def Trade_Barriers_Proportion():
         #print(Token_Sort_Ratio)
         #print(Token_Set_Ratio)
         print ('\n_______________'+Str1+'______________\n')
-    return keywordsDict   
-keywordsDict = Trade_Barriers_Proportion()
+    return keywordsDict
+
+def keywords_Frequencies(JasonFile):
+    with open(JasonFile, 'r') as f:
+         keywordsDict = json.load(f)
+    Dictionary = {}
+    #keys = ['Ratio','Partial_Ratio','Token_Sort_Ratio','Token_Set_Ratio']
+    #new_dict = dict(zip(keys, values))
+    for keyword in keywordsDict.keys():
+        Frequencies = list()
+        for Ratios in keywordsDict[keyword]:
+            Ratio = list(set(Ratios))
+            Frequency = sum([1 for R in Ratio if R > round(mean(Ratio),2)])
+            
+            Frequencies.append(Frequency)
+        Dictionary[keyword] = Frequencies    
+    return Dictionary
+
+
+def Trade_Barriers_Proportion(Dictionary):
+    Barriers = Barriers_Keywords()
+    for Type in Barriers.keys():
+        for Barrier in Barriers[Type].keys():
+            for keyword in Barriers[Type][Barrier].keys():
+                Barriers[Type][Barrier][keyword] = Dictionary[keyword][0]
+    
+    return Barriers
+ 
+#keywordsDict = keywords_Discussion_Matching()
+Dictionary = keywords_Frequencies('keywordsDict.json')
+Barriers = Trade_Barriers_Proportion(Dictionary)
