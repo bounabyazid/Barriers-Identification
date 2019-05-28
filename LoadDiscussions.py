@@ -3,7 +3,7 @@
 """
 Created on Sat May 25 10:06:53 2019
 
-@author: polo
+@author: Yazid Bounab
 """
 import os
 import json
@@ -11,7 +11,6 @@ import numpy as np
 from scipy import mean
 from fuzzywuzzy import fuzz
 from nltk.tokenize import sent_tokenize
-
 
 def List_Dirs(MainDir):
     return [ f for f in os.listdir(MainDir)]# if os.path.isfile(os.path.join(destdir,f)) ]
@@ -112,23 +111,36 @@ def keywords_Frequencies(JasonFile):
         Dictionary[keyword] = Frequencies    
     return Dictionary
 
-def Sum_Dictionary(Dict,N):
+def Sum_Dictionary(Dict):
     a = np.array(list(Dict.values()))
-    Sum = np.sum(a, axis=0).tolist()[N]
+    Sum = np.sum(a, axis=0).tolist()
+    return Sum
+
+def Sum_Dictionary_N(Dict,N):
+    a = np.array(list(Dict.values()))
+    Sum = np.sum(a, axis=0).tolist()#[N]
     return Sum
 
 def Trade_Barriers_Proportion(N):
     Dictionary = keywords_Frequencies('keywordsDict.json')
     Barriers = Barriers_Keywords()
     
-    Sum = Sum_Dictionary(Dictionary,N)
+    Barriers_Proportion = {}
     
     for Type in Barriers.keys():
+        Barriers_Proportion[Type] = dict((keyword,0) for keyword in Barriers[Type].keys())
         for Barrier in Barriers[Type].keys():
             for keyword in Barriers[Type][Barrier].keys():
-                Barriers[Type][Barrier][keyword] = Dictionary[keyword][N] /Sum  
-    return Barriers
+                Barriers[Type][Barrier][keyword] = Dictionary[keyword][N]
+                
+            Barriers_Proportion[Type][Barrier] = Sum_Dictionary(Barriers[Type][Barrier])
+    
+    for Type in Barriers_Proportion.keys():
+        Sum  = Sum_Dictionary(Barriers_Proportion[Type])
+        for Barrier in Barriers_Proportion[Type].keys():
+            Barriers_Proportion[Type][Barrier] = round((Barriers_Proportion[Type][Barrier]/Sum)*100,2)
+    return Barriers_Proportion#, Barriers
  
 #keywordsDict = keywords_Discussion_Matching()
 
-Barriers = Trade_Barriers_Proportion(0)
+#Barriers_Proportion = Trade_Barriers_Proportion(0)
