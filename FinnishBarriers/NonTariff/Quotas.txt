@@ -1,0 +1,47 @@
+kiintiö
+Vientikiintiöt
+tuontikiintiöt
+määrän valvonta
+määrälliset rajoitukset
+rajoittaa ulkomaisten tavaroiden määrää
+tietyt määrät
+säästää ulkomaan valuuttaa
+suojella paikallista teollisuutta
+säilyttää puutteelliset resurssit
+absoluuttinen
+ehdoton kiintiö
+absoluuttiset termit
+radikaali ehdoton kiintiö
+nolla kiintiö
+kauppasaarto
+Tullikikiintiöt
+Tullikiintiöt
+kiintiötavarat
+aseta kiintiötavaroiden lukumäärä normaaliksi
+alennettu tulli
+Kiintiön ylitys
+korkeampi tariffi
+vapaaehtoinen
+vapaaehtoinen kiintiö
+tuonnin lukumäärä
+virallinen sopimus
+tarjonnan rajoitukset
+vapaaehtoinen vientirajoitus
+Vv
+asianmukainen markkinointisopimus
+MA
+suora sopimus
+määrittele viennin hallintasäännöt
+kaupan määrät ja konsultointioikeudet
+harmaa alue
+rajoittaa vapaaehtoisesti
+kosto
+maailmanlaajuinen
+kahdenvälinen
+Yleiset kiintiöt
+kahdenväliset kiintiöt
+huutokaupataan
+Huutokaupatut kiintiöt
+Tarjoaja
+Paikallinen sisältövaatimus
+ps

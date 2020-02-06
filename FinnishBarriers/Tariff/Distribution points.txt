@@ -1,0 +1,37 @@
+jakelujärjestelmä
+jakeluvero
+kulutusvero
+jakelu
+kulutus
+tuotanto
+välilliset verot
+jakelukohta
+ostaa
+yksi vaihe
+myyntivero
+jakeluketju
+Kohta ketjussa
+Viljelijä
+vähittäiskauppiaat
+tukkukauppiaat
+myyntiveron lupa
+arvo lisätty
+Arvonlisävero
+ALV
+monivaiheinen
+kertymätön vero
+Vakuutukset ja rahti
+CIF
+ryöpytä
+Cascade-verot
+liikevaihtoverot
+maksettujen verojen summa
+valmistevero
+Valmistevero
+kertaluonteinen
+liikevaihto
+Liikevaihtovero
+tasoitusvero
+finanssipolitiikka
+veroneutraali
+jakeluverot

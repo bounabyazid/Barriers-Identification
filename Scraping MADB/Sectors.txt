@@ -1,0 +1,33 @@
+Horizontal
+Aircraft
+Automotive
+Ceramics and Glass
+Chemicals
+Pharmaceuticals
+Cosmetics
+Electronics
+Mining
+Iron, Steel and Non-Ferrous Metals
+Machinery
+Wood, Paper and Pulp
+Shipbuilding
+Telecommunications Equipment
+Textiles and Leather
+Agriculture and Fisheries
+Wines & Spirits
+Other Industries
+Construction Industry
+ICT
+Services - Business, incl. professional services
+Services - Communication, incl. postal services
+Services - Construction
+Services - Distribution
+Services - Financial
+Services - Tourism and Travel
+Services - Transport
+Services - Energy
+Services - Education
+Services - Environment
+Services - Health and Social
+Services - Recreational, incl. news agency services
+Services - Other

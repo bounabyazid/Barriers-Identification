@@ -1,0 +1,8 @@
+ajanjakso
+kestävä aika
+lisämaksu
+tulli lisämaksu
+väliaikainen toiminta
+tasoitustulli
+pysyvä lisämaksu
+
