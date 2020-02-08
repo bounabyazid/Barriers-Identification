@@ -39,7 +39,7 @@ from lxml import html
 class Render(QWebPage):  
   def __init__(self, url):  
     self.app = QApplication(sys.argv)  
-    QWebPage.__init__(self)  
+    QWebPage.__init__(self)
     self.loadFinished.connect(self._loadFinished)  
     self.mainFrame().load(QUrl(url))  
     self.app.exec_()  
@@ -65,7 +65,7 @@ def retrive(url):
     TBody = soup.find('tbody')
     for T in TBody.find_all('a', class_='ng-binding'):
     #    print(T.text)
-        print(T)
+        print('https://madb.europa.eu/madb/'+T['href'])
 
     print('________________________________________________________________________')
 
@@ -83,6 +83,6 @@ def retrive(url):
     #for T in TBody.find_all('td', data-title-text='Country'):
     #    print(T.text)
 
-def get_links(url):
+#def get_links(url):
     
 retrive(urls[0])
