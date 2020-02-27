@@ -75,4 +75,14 @@ ONCORHYNCHUS MYKISS
 Roe from Vendace
 Coregonus albula
 Roe from Whitefish
-Coregonus clupeaformis 
+Coregonus clupeaformis
+
+perch
+pik
+creyfish
+zender
+smelt
+bream
+burbot
+vendace
+roach
