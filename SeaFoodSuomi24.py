@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 from afinn.afinn import Afinn
 
+from googletrans import Translator
 
 BaseLink = 'https://keskustelu.suomi24.fi'
 Section = 'ruoka-ja-juoma/kala-ja-ayriaiset'
@@ -81,14 +82,19 @@ def getAllText(pages):
 
 def getCommentaboutRussia():
     RusiaComments = []
+    EnglishComments = []
     pickle_in = open('Fish and SeaFood.pkl',"rb")
     pages = pickle.load(pickle_in)
     AllText = getAllText(pages)
     
+    translator = Translator()
+
     for Text in AllText:
         if any(item in Text for item in Russialist):
            RusiaComments.append(Text)
-    return RusiaComments
+           EnglishComments.append(translator.translate(Text).text)
+    
+    return RusiaComments, EnglishComments
 
 def Sentiments(TargetTextList):
     af = Afinn(language='fi',emoticons=True)
@@ -117,4 +123,4 @@ pages = pickle.load(pickle_in)
 #AllText = getAllText(pages)
 #sentiment_scores = Sentiments()
 
-RusiaComments = getCommentaboutRussia()
+RusiaComments, EnglishComments = getCommentaboutRussia()
