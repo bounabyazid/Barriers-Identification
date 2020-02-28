@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Wed Feb 27 04:46:24 2020
 
@@ -9,8 +10,13 @@ import pickle
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
+from afinn.afinn import Afinn
+
+
 BaseLink = 'https://keskustelu.suomi24.fi'
 Section = 'ruoka-ja-juoma/kala-ja-ayriaiset'
+
+Russialist = ['venäläinen','Venäjä','ryssä','venäjän']
 
 def getReplyofReplay(element):
     Replies = []
@@ -52,19 +58,63 @@ def getPage(PageNumber):
 
     return Discussions
 
-def getAllPages(BaseLink,Section):
-    pages = {}
+def getAllPages(BaseLink,Section,pages):
+    
     link = BaseLink+'/'+Section
     soup = BeautifulSoup(urlopen(link), 'lxml')
     NbPages = int(soup.find('span', class_='pagination-page-count').text)
-
-    for PageNumber in range(1,NbPages+1):
+    NbPages = 88
+    for PageNumber in range(61,NbPages+1):
         print('_________________',PageNumber,'_________________')
         pages['page'+str(PageNumber)] = getPage(PageNumber=str(PageNumber))
-    return pages
+        
+def getAllText(pages):
+    AllText = []
+    NbPages = 88
+    for PageNumber in range(1,NbPages+1):
+        for Discution in pages['page'+str(PageNumber)]:
+            AllText.append(Discution['Title'])
+            AllText.append(Discution['Text'])
+            AllText.extend(Discution['Replies'])
+    
+    return AllText
 
-pages = getAllPages(BaseLink,Section)
+def getCommentaboutRussia():
+    RusiaComments = []
+    pickle_in = open('Fish and SeaFood.pkl',"rb")
+    pages = pickle.load(pickle_in)
+    AllText = getAllText(pages)
+    
+    for Text in AllText:
+        if any(item in Text for item in Russialist):
+           RusiaComments.append(Text)
+    return RusiaComments
 
-pickle_out = open("Fish and SeaFood.pkl","wb")
-pickle.dump(pages, pickle_out)
-pickle_out.close()
+def Sentiments(TargetTextList):
+    af = Afinn(language='fi',emoticons=True)
+
+    sentiment_scores = [af.score(comment) for comment in TargetTextList[0:10]]
+    
+    sentiment_category = ['positive' if score > 0 
+                          else 'negative' if score < 0 
+                              else 'neutral' 
+                                  for score in sentiment_scores]
+    
+    return sentiment_scores
+    
+
+pages = {}
+
+pickle_in = open('Fish and SeaFood.pkl',"rb")
+pages = pickle.load(pickle_in)
+
+#getAllPages(BaseLink,Section,pages)
+#
+#pickle_out = open("Fish and SeaFood.pkl","wb")
+#pickle.dump(pages, pickle_out)
+#pickle_out.close()
+
+#AllText = getAllText(pages)
+#sentiment_scores = Sentiments()
+
+RusiaComments = getCommentaboutRussia()
